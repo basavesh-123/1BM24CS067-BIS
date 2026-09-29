@@ -1,0 +1,83 @@
+import random
+
+# Number of jobs and machines
+num_jobs = 5
+num_machines = 2
+
+# Processing time of each job on each machine
+processing_time = [
+    [3, 2],   # J1
+    [2, 4],   # J2
+    [4, 3],   # J3
+    [2, 1],   # J4
+    [3, 4]    # J5
+]
+
+population_size = 6
+generations = 20
+mutation_rate = 0.1
+
+
+# Calculate makespan
+def calculate_makespan(schedule):
+    machine_time = [0] * num_machines
+
+    for job in schedule:
+        for machine in range(num_machines):
+            machine_time[machine] += processing_time[job][machine]
+
+    return max(machine_time)
+
+
+# Fitness function
+def fitness(schedule):
+    return 1 / (1 + calculate_makespan(schedule))
+
+
+# Create initial population
+population = []
+
+for _ in range(population_size):
+    schedule = list(range(num_jobs))
+    random.shuffle(schedule)
+    population.append(schedule)
+
+
+# Genetic Algorithm
+for generation in range(generations):
+
+    # Sort according to fitness
+    population.sort(key=fitness, reverse=True)
+
+    # Select best two parents
+    parent1 = population[0]
+    parent2 = population[1]
+
+    # Crossover
+    point = random.randint(1, num_jobs - 1)
+
+    child = parent1[:point]
+
+    for job in parent2:
+        if job not in child:
+            child.append(job)
+
+    # Mutation
+    if random.random() < mutation_rate:
+        i, j = random.sample(range(num_jobs), 2)
+        child[i], child[j] = child[j], child[i]
+
+    # Replace worst solution
+    population[-1] = child
+
+
+# Find best schedule
+best_schedule = max(population, key=fitness)
+
+print("Best Job Schedule:")
+
+for job in best_schedule:
+    print("J" + str(job + 1), end=" ")
+
+print("\nMinimum Makespan:",
+      calculate_makespan(best_schedule))
