@@ -1,5 +1,4 @@
 import numpy as np
-
 # 1. Define the Agricultural Monitoring Environment (Fitness Function)
 def evaluate_irrigation_system(params):
     """
